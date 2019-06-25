@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="true">
   <contextName>logback</contextName>
-  <property name="log.path" value="logs/dts_client.log"/>
+  <property name="log.path" value="logs/meican.log"/>
 
   <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -25,7 +25,7 @@
   </appender>
 
   <root level="debug">
-    <appender-ref ref="console"/>
+    <appender-ref ref="file"/>
   </root>
 
 </configuration>
