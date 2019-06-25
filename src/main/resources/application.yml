@@ -1,0 +1,21 @@
+spring:
+    datasource:
+        url: jdbc:mysql://192.168.32.88:3306/meican?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&rewriteBatchedStatements=true
+        username: lvji
+        password: L@#$j
+    jpa:
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                show-sql: true
+meican:
+    login: https://meican.com/account/directlogin
+    order: https://meican.com/preorder/api/v2.1/orders/add
+    restaurant: https://meican.com/preorder/api/v2.1/restaurants/list?tabUniqueId=c91b9fde-f182-4235-bf35-b1a132f6c0c7&targetTime=
+    dish: https://meican.com/preorder/api/v2.1/recommendations/dishes?tabUniqueId=c91b9fde-f182-4235-bf35-b1a132f6c0c7&targetTime=
+    delete: https://meican.com/preorder/api/v2.1/orders/delete
+    detail: https://meican.com/preorder/api/v2.1/calendaritems/list?withOrderDetail=false&beginDate={beginDate}&endDate={endDate}
+
+dingding:
+    token: a06142750e3a04189b00e8658a226c6f38556aeab0fd385c45a470a5b1d17f70
