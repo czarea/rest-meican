@@ -86,7 +86,7 @@ public class OrderHelper {
             orderingRemind(dishes);
 
             Date now = new Date();
-            Date beginOrder = DateUtils.parseDate(DateFormatUtils.format(now, "yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd 15:00:00");
+            Date beginOrder = DateUtils.parseDate(DateFormatUtils.format(now, "yyyy-MM-dd 15:00:00"), "yyyy-MM-dd HH:mm:ss");
             if (now.after(beginOrder)) {
                 logger.info("到了当天15：00，小助手开始直接点餐了！");
                 List<Order> orders = orderRepository
