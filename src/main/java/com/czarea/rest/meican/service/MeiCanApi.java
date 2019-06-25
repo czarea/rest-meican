@@ -34,7 +34,7 @@ public class MeiCanApi {
         this.meiCanProperties = meiCanProperties;
     }
 
-    private List<String> cookies;
+    private Map<String, List<String>> cookies = new HashMap<>();
     private List<Dish> dishes;
     private List<Restaurant> restaurants;
     private String today;
@@ -56,13 +56,13 @@ public class MeiCanApi {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
         ResponseEntity<Object> response = restTemplate.postForEntity(meiCanProperties.getLogin(), request, Object.class);
-        cookies = response.getHeaders().get("Set-Cookie");
+        cookies.put(email, response.getHeaders().get("Set-Cookie"));
     }
 
-    public OrderDetail hasOrder() {
+    public OrderDetail hasOrder(String email) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.put(HttpHeaders.COOKIE, cookies);
+        headers.put(HttpHeaders.COOKIE, cookies.get(email));
         HttpEntity<MultiValueMap<String, String>> params = new HttpEntity<>(headers);
         Map<String, String> uriVariables = new HashMap<>(2);
         uriVariables.put("beginDate", DateFormatUtils.format(new Date(), "yyyy-MM-dd"));
@@ -71,35 +71,38 @@ public class MeiCanApi {
             .exchange(meiCanProperties.getDetail(), HttpMethod.GET, params, OrderDetail.class, uriVariables).getBody();
     }
 
-    public void getRestaurantsFromMeiCan() {
+    public void getRestaurantsFromMeiCan(String email) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.put(HttpHeaders.COOKIE, cookies);
+        headers.put(HttpHeaders.COOKIE, cookies.get(email));
         HttpEntity<MultiValueMap<String, String>> params = new HttpEntity<>(headers);
         RestaurantDTO result = restTemplate.exchange(meiCanProperties.getRestaurant() + today, HttpMethod.GET, params, RestaurantDTO.class)
             .getBody();
         restaurants = result.getRestaurantList();
     }
 
-    public void getDishsFromMeiCan() {
+    public void getDishsFromMeiCan(String email, String tabUniqueId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.put(HttpHeaders.COOKIE, cookies);
+        headers.put(HttpHeaders.COOKIE, cookies.get(email));
+        Map<String, String> uriVariables = new HashMap<>(2);
+        uriVariables.put("tabUniqueId", tabUniqueId);
         HttpEntity<MultiValueMap<String, String>> params = new HttpEntity<>(headers);
-        DishDTO result = restTemplate.exchange(meiCanProperties.getDish() + today, HttpMethod.GET, params, DishDTO.class).getBody();
+        DishDTO result = restTemplate.exchange(meiCanProperties.getDish() + today, HttpMethod.GET, params, DishDTO.class, uriVariables)
+            .getBody();
         result.getMyRegularDishList().addAll(result.getOthersRegularDishList());
         dishes = result.getMyRegularDishList();
     }
 
-    public String order(String dishId) {
+    public String order(String dishId, String email) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.put(HttpHeaders.COOKIE, cookies);
+        headers.put(HttpHeaders.COOKIE, cookies.get(email));
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("corpAddressRemark", "");
         params.add("corpAddressUniqueId", "c897a959b99a");
-        params.add("remarks", "[{\"dishId:" + dishId + ",\"remark\":\"\"}]");
-        params.add("order", "[{\"count\":1,\"dishId:" + dishId + "}]");
+        params.add("remarks", "[{\"dishId\":\"" + dishId + "\",\"remark\":\"\"}]");
+        params.add("order", "[{\"count\":1,\"dishId\":\"" + dishId + "\"}]");
         params.add("tabUniqueId", "c91b9fde-f182-4235-bf35-b1a132f6c0c7");
         params.add("targetTime", today);
         params.add("userAddressUniqueId", "c897a959b99a");
@@ -110,10 +113,10 @@ public class MeiCanApi {
     /**
      * 删除订单
      */
-    public void refund(String uniqueId) {
+    public void refund(String uniqueId, String email) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.put(HttpHeaders.COOKIE, cookies);
+        headers.put(HttpHeaders.COOKIE, cookies.get(email));
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("restoreCart", "false");
         params.add("type", "CORP_ORDER");
@@ -126,11 +129,12 @@ public class MeiCanApi {
         today = new SimpleDateFormat("yyyy-MM-dd 16:00").format(new Date());
     }
 
-    public List<String> getCookies() {
+
+    public Map<String, List<String>> getCookies() {
         return cookies;
     }
 
-    public void setCookies(List<String> cookies) {
+    public void setCookies(Map<String, List<String>> cookies) {
         this.cookies = cookies;
     }
 

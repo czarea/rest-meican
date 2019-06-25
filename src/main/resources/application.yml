@@ -12,8 +12,8 @@ spring:
 meican:
     login: https://meican.com/account/directlogin
     order: https://meican.com/preorder/api/v2.1/orders/add
-    restaurant: https://meican.com/preorder/api/v2.1/restaurants/list?tabUniqueId=c91b9fde-f182-4235-bf35-b1a132f6c0c7&targetTime=
-    dish: https://meican.com/preorder/api/v2.1/recommendations/dishes?tabUniqueId=c91b9fde-f182-4235-bf35-b1a132f6c0c7&targetTime=
+    restaurant: https://meican.com/preorder/api/v2.1/restaurants/list?tabUniqueId={tabUniqueId}&targetTime=
+    dish: https://meican.com/preorder/api/v2.1/recommendations/dishes?tabUniqueId={tabUniqueId}&targetTime=
     delete: https://meican.com/preorder/api/v2.1/orders/delete
     detail: https://meican.com/preorder/api/v2.1/calendaritems/list?withOrderDetail=false&beginDate={beginDate}&endDate={endDate}
 

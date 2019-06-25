@@ -14,6 +14,7 @@ import com.czarea.rest.meican.service.MeiCanApi;
 import com.czarea.rest.meican.util.WeightedRandomBag;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -45,22 +46,28 @@ public class OrderHelper {
         this.dingDingService = dingDingService;
     }
 
-    @Scheduled(cron = "0 */10 14-16 * * 1,2,4")
+    @Scheduled(cron = "0 0 13 * * 1,2,4")
+    private void clear() {
+        meiCanApi.today();
+        meiCanApi.setCookies(new HashMap<>());
+
+    }
+
+    @Scheduled(cron = "0 0/10 14-16 * * 1,2,4")
     private void order() throws ParseException {
         User user;
         logger.info("点餐小能手开始工作咯☻");
         List<User> users = userRepository.findAll();
-        int i = 0;
-        for (; i < users.size(); i++) {
-            if (i == 0) {
-                meiCanApi.today();
-            }
+        for (int i = 0; i < users.size(); i++) {
             user = users.get(i);
-
-            meiCanApi.getCookies(user.getEmail(), user.getPassword());
+            meiCanApi.today();
+            logger.info("开始提醒：{} 点餐！", user.getName());
+            if (meiCanApi.getCookies().get(user.getEmail()) == null || meiCanApi.getCookies().get(user.getEmail()).isEmpty()) {
+                meiCanApi.getCookies(user.getEmail(), user.getPassword());
+            }
             OrderDetail orderDetail = null;
             try {
-                orderDetail = meiCanApi.hasOrder();
+                orderDetail = meiCanApi.hasOrder(user.getEmail());
             } catch (Exception e) {
                 logger.error("有可能登陆失败！");
             }
@@ -73,17 +80,18 @@ public class OrderHelper {
                 logger.error("", e);
                 continue;
             }
-
             if (hasOrder) {
                 logger.info("{} 已经下单，忽略！", user.getName());
                 continue;
             }
-            meiCanApi.getDishsFromMeiCan();
-            meiCanApi.getRestaurantsFromMeiCan();
             List<Dish> dishes = meiCanApi.getDishes();
+            if (dishes == null || dishes.isEmpty()) {
+                meiCanApi.getDishsFromMeiCan(user.getEmail(),user.getTabUniqueId());
+                dishes = meiCanApi.getDishes();
+            }
 
             logger.info("推送钉钉消息！");
-            orderingRemind(dishes);
+            orderingRemind(dishes, user);
 
             Date now = new Date();
             Date beginOrder = DateUtils.parseDate(DateFormatUtils.format(now, "yyyy-MM-dd 15:00:00"), "yyyy-MM-dd HH:mm:ss");
@@ -106,31 +114,33 @@ public class OrderHelper {
 
                 Dish selected = (Dish) weightedRandomBag.getRandom();
 
-                meiCanApi.order(selected.getId());
+                meiCanApi.order(selected.getId(), user.getEmail());
 
                 Order order = new Order();
                 order.setDishId(selected.getId());
                 order.setDish(selected.getName());
                 order.setUserId(user.getId());
                 order.setCreateTime(new Date());
-                orderedRemind(selected);
+                orderedRemind(selected,user);
+            } else {
+                logger.info("未到15:00，不开始自动点餐！");
             }
 
         }
     }
 
-    private void orderedRemind(Dish selected) {
+    private void orderedRemind(Dish selected, User user) {
         StringBuffer message = new StringBuffer();
         message.append("驴迹美餐小助手开始发功啦^_^\n")
-            .append("给主人订了！\n")
+            .append("给主人：" + user.getName() + "订了:")
             .append(selected.getName() + "\n")
-            .append("给个点赞吧^_^");
+            .append("给个点赞吧^_^ \n");
         dingDingService.send(new TextMessage(message.toString(), true));
     }
 
-    private void orderingRemind(List<Dish> dishes) {
+    private void orderingRemind(List<Dish> dishes, User user) {
         StringBuffer message = new StringBuffer();
-        message.append("驴迹美餐小助手温馨提示点餐时间到！！！\n")
+        message.append("驴迹美餐小助手温馨：" + user.getName() + " 提示点餐时间到！！！\n")
             .append("如果已经点餐请忽略！\n\n")
             .append("可点餐列表：\n\n");
         AtomicInteger i = new AtomicInteger(1);

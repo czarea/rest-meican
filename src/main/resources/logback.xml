@@ -28,4 +28,6 @@
     <appender-ref ref="file"/>
   </root>
 
+  <logger name="com.zaxxer.hikari.pool" level="info" />
+
 </configuration>

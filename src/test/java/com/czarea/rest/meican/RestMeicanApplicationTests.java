@@ -32,33 +32,33 @@ public class RestMeicanApplicationTests {
     @Test
     public void getRestaurant() {
         meiCanApi.getCookies("zhouzx23@dingtalk.com", "123456");
-        meiCanApi.getRestaurantsFromMeiCan();
+        meiCanApi.getRestaurantsFromMeiCan("zhouzx23@dingtalk.com");
         System.out.println(meiCanApi.getRestaurants());
     }
 
     @Test
     public void getDish() {
         meiCanApi.getCookies("zhouzx23@dingtalk.com", "123456");
-        meiCanApi.getDishsFromMeiCan();
+        meiCanApi.getDishsFromMeiCan("zhouzx23@dingtalk.com", "c91b9fde-f182-4235-bf35-b1a132f6c0c7");
         System.out.println(meiCanApi.getDishes());
     }
 
     @Test
     public void order() {
         meiCanApi.getCookies("zhouzx23@dingtalk.com", "123456");
-        meiCanApi.getDishsFromMeiCan();
+        meiCanApi.getDishsFromMeiCan("zhouzx23@dingtalk.com", "c91b9fde-f182-4235-bf35-b1a132f6c0c7");
         meiCanApi.today();
         int random = RandomUtils.nextInt(0, meiCanApi.getDishes().size());
-        String result = meiCanApi.order(meiCanApi.getDishes().get(random).getId());
+        String result = meiCanApi.order(meiCanApi.getDishes().get(random).getId(), "zhouzx23@dingtalk.com");
         System.out.println(result);
     }
 
     @Test
     public void getDetail() {
-        meiCanApi.getCookies("zhouzx23@dingtalk.com", "123456");
-        meiCanApi.getDishsFromMeiCan();
+        meiCanApi.getCookies("chenjiewen@lvjitec.com", "123456");
+        meiCanApi.getDishsFromMeiCan("chenjiewen@lvjitec.com", "4b4c061f-fc5b-46d4-bd2b-2c7e9cb5ea04");
         meiCanApi.today();
-        System.out.println(meiCanApi.hasOrder());
+        System.out.println(meiCanApi.hasOrder("chenjiewen@lvjitec.com"));
     }
 
     @Test

@@ -20,6 +20,7 @@ public class User {
     private String password;
     private Date createTime;
     private Date updateTime;
+    private String tabUniqueId;
 
     public Integer getId() {
         return id;
@@ -68,4 +69,13 @@ public class User {
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
+
+    public String getTabUniqueId() {
+        return tabUniqueId;
+    }
+
+    public void setTabUniqueId(String tabUniqueId) {
+        this.tabUniqueId = tabUniqueId;
+    }
+
 }
