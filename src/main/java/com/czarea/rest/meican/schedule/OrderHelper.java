@@ -45,7 +45,7 @@ public class OrderHelper {
         this.dingDingService = dingDingService;
     }
 
-    @Scheduled(cron = "0/2 * 14-16 * * 1,2,4")
+    @Scheduled(cron = "0 */10 14-16 * * 1,2,4")
     private void order() throws ParseException {
         User user;
         logger.info("点餐小能手开始工作咯☻");

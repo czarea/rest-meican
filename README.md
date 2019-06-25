@@ -53,6 +53,18 @@ return restTemplate.exchange(meiCanProperties.getOrder(), HttpMethod.POST, reque
 @Scheduled(cron = "0 0/10 14-16 * * 1,2,4")
 ```
 
+**钉钉机器人推送**
+
+```
+@Value("#{'https://oapi.dingtalk.com/robot/send?access_token='.concat('${dingding.token}')}")
+private String url;
+
+
+public SendResult send(Message message) {
+    return restTemplate.postForObject(url, message, SendResult.class);
+}
+```
+
 ### 权重算法
 
 ```
