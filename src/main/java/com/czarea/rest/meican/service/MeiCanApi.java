@@ -94,7 +94,7 @@ public class MeiCanApi {
         dishes = result.getMyRegularDishList();
     }
 
-    public String order(String dishId, String email) {
+    public String order(String dishId, String email, String tabUniqueId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.put(HttpHeaders.COOKIE, cookies.get(email));
@@ -103,7 +103,7 @@ public class MeiCanApi {
         params.add("corpAddressUniqueId", "c897a959b99a");
         params.add("remarks", "[{\"dishId\":\"" + dishId + "\",\"remark\":\"\"}]");
         params.add("order", "[{\"count\":1,\"dishId\":\"" + dishId + "\"}]");
-        params.add("tabUniqueId", "c91b9fde-f182-4235-bf35-b1a132f6c0c7");
+        params.add("tabUniqueId", tabUniqueId);
         params.add("targetTime", today);
         params.add("userAddressUniqueId", "c897a959b99a");
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);

@@ -86,7 +86,7 @@ public class OrderHelper {
             }
             List<Dish> dishes = meiCanApi.getDishes();
             if (dishes == null || dishes.isEmpty()) {
-                meiCanApi.getDishsFromMeiCan(user.getEmail(),user.getTabUniqueId());
+                meiCanApi.getDishsFromMeiCan(user.getEmail(), user.getTabUniqueId());
                 dishes = meiCanApi.getDishes();
             }
 
@@ -114,14 +114,15 @@ public class OrderHelper {
 
                 Dish selected = (Dish) weightedRandomBag.getRandom();
 
-                meiCanApi.order(selected.getId(), user.getEmail());
+                meiCanApi.order(selected.getId(), user.getEmail(),user.getTabUniqueId());
 
                 Order order = new Order();
                 order.setDishId(selected.getId());
                 order.setDish(selected.getName());
                 order.setUserId(user.getId());
                 order.setCreateTime(new Date());
-                orderedRemind(selected,user);
+                orderRepository.save(order);
+                orderedRemind(selected, user);
             } else {
                 logger.info("未到15:00，不开始自动点餐！");
             }
