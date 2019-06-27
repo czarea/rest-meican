@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -90,8 +92,8 @@ public class MeiCanApi {
         HttpEntity<MultiValueMap<String, String>> params = new HttpEntity<>(headers);
         DishDTO result = restTemplate.exchange(meiCanProperties.getDish() + today, HttpMethod.GET, params, DishDTO.class, uriVariables)
             .getBody();
-        result.getMyRegularDishList().addAll(result.getOthersRegularDishList());
-        dishes = result.getMyRegularDishList();
+        dishes = Stream.concat(result.getMyRegularDishList().stream(), result.getOthersRegularDishList().stream())
+            .collect(Collectors.toList());
     }
 
     public String order(String dishId, String email, String tabUniqueId) {
