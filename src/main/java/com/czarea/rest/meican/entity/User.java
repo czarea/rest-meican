@@ -17,6 +17,7 @@ public class User {
     private Integer id;
     private String name;
     private String email;
+    private String phone;
     private String password;
     private Date createTime;
     private Date updateTime;
@@ -78,4 +79,11 @@ public class User {
         this.tabUniqueId = tabUniqueId;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 }

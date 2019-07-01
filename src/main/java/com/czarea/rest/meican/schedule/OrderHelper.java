@@ -2,6 +2,7 @@ package com.czarea.rest.meican.schedule;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import com.czarea.rest.meican.ding.At;
 import com.czarea.rest.meican.ding.TextMessage;
 import com.czarea.rest.meican.dto.DishDTO.Dish;
 import com.czarea.rest.meican.dto.OrderDetail;
@@ -13,6 +14,7 @@ import com.czarea.rest.meican.service.DingDingService;
 import com.czarea.rest.meican.service.MeiCanApi;
 import com.czarea.rest.meican.util.WeightedRandomBag;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +55,7 @@ public class OrderHelper {
 
     }
 
-    @Scheduled(cron = "0 0/10 14-16 * * 1,2,4")
+    @Scheduled(cron = "0/1 * 14-20 * * 1,2,4")
     private void order() throws ParseException {
         User user;
         logger.info("点餐小能手开始工作咯☻");
@@ -132,17 +134,19 @@ public class OrderHelper {
 
     private void orderedRemind(Dish selected, User user) {
         StringBuffer message = new StringBuffer();
-        message.append("驴迹美餐小助手开始发功啦^_^\n")
+        message.append("美餐小助手完成一次点餐了哦^_^\n")
             .append("给主人：" + user.getName() + "订了:")
             .append(selected.getName() + "\n")
-            .append("给个点赞吧^_^ \n");
-        dingDingService.send(new TextMessage(message.toString(), true));
+            .append("给个赞吧^_^ \n");
+        At at = new At(Arrays.asList(user.getPhone()),false);
+        TextMessage textMessage = new TextMessage(message.toString(), true);
+        textMessage.setAt(at);
+        dingDingService.send(textMessage);
     }
 
     private void orderingRemind(List<Dish> dishes, User user) {
         StringBuffer message = new StringBuffer();
-        message.append("驴迹美餐小助手温馨：" + user.getName() + " 提示点餐时间到！！！\n")
-            .append("如果已经点餐请忽略！\n\n")
+        message.append("美餐小助手温馨：" + user.getName() + " 提示点餐时间到！！！\n")
             .append("可点餐列表：\n\n");
         AtomicInteger i = new AtomicInteger(1);
         dishes.forEach(item -> {
@@ -151,7 +155,10 @@ public class OrderHelper {
         });
 
         message.append("\n\n");
-        dingDingService.send(new TextMessage(message.toString(), true));
+        At at = new At(Arrays.asList(user.getPhone()),false);
+        TextMessage textMessage = new TextMessage(message.toString(), false);
+        textMessage.setAt(at);
+        dingDingService.send(textMessage);
     }
 
 }
