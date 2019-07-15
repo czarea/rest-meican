@@ -52,14 +52,13 @@ public class OrderHelper {
     private void clear() {
         meiCanApi.today();
         meiCanApi.setCookies(new HashMap<>());
-
     }
 
     @Scheduled(cron = "0 0/10 14-16 * * 1,2,4")
     private void order() throws ParseException {
         User user;
         logger.info("点餐小能手开始工作咯☻");
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findByStatus(1);
         for (int i = 0; i < users.size(); i++) {
             user = users.get(i);
             meiCanApi.today();

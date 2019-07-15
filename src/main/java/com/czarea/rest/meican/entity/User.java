@@ -10,14 +10,19 @@ import javax.persistence.Table;
  * @author zhouzx
  */
 @Entity
-@Table(name="t_user")
+@Table(name = "t_user")
 public class User {
+
     @Id
     @GeneratedValue
     private Integer id;
     private String name;
     private String email;
     private String phone;
+    /**
+     * 0：注销；1：正常；
+     */
+    private Integer status;
     private String password;
     private Date createTime;
     private Date updateTime;
@@ -85,5 +90,28 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", email='" + email + '\'' +
+            ", phone='" + phone + '\'' +
+            ", status=" + status +
+            ", password='" + password + '\'' +
+            ", createTime=" + createTime +
+            ", updateTime=" + updateTime +
+            ", tabUniqueId='" + tabUniqueId + '\'' +
+            '}';
     }
 }

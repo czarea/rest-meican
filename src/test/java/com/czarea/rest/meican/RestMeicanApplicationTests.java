@@ -30,6 +30,11 @@ public class RestMeicanApplicationTests {
     private OrderRepository orderRepository;
 
     @Test
+    public void testGetUsers() {
+        System.out.println(userRepository.findByStatus(0));
+    }
+
+    @Test
     public void getRestaurant() {
         meiCanApi.getCookies("zhouzx23@dingtalk.com", "123456");
         meiCanApi.getRestaurantsFromMeiCan("zhouzx23@dingtalk.com");
@@ -49,7 +54,8 @@ public class RestMeicanApplicationTests {
         meiCanApi.getDishsFromMeiCan("zhouzx23@dingtalk.com", "c91b9fde-f182-4235-bf35-b1a132f6c0c7");
         meiCanApi.today();
         int random = RandomUtils.nextInt(0, meiCanApi.getDishes().size());
-        String result = meiCanApi.order(meiCanApi.getDishes().get(random).getId(), "zhouzx23@dingtalk.com","c91b9fde-f182-4235-bf35-b1a132f6c0c7");
+        String result = meiCanApi
+            .order(meiCanApi.getDishes().get(random).getId(), "zhouzx23@dingtalk.com", "c91b9fde-f182-4235-bf35-b1a132f6c0c7");
         System.out.println(result);
     }
 
