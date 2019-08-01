@@ -114,8 +114,20 @@ public class OrderHelper {
                 });
 
                 Dish selected = (Dish) weightedRandomBag.getRandom();
-
-                meiCanApi.order(selected.getId(), user.getEmail(),user.getTabUniqueId());
+                boolean retry = true;
+                int times = 1;
+                while (retry) {
+                    try {
+                        times++;
+                        String response = meiCanApi.order(selected.getId(), user.getEmail(), user.getTabUniqueId());
+                        logger.info("点餐响应结果：{}", response);
+                    } catch (Exception e) {
+                        logger.error("add order error!", e);
+                        if (times == 5) {
+                            retry = false;
+                        }
+                    }
+                }
 
                 Order order = new Order();
                 order.setDishId(selected.getId());
@@ -137,7 +149,7 @@ public class OrderHelper {
             .append("给主人：" + user.getName() + "订了:")
             .append(selected.getName() + "\n")
             .append("给个赞吧^_^ \n");
-        At at = new At(Arrays.asList(user.getPhone()),false);
+        At at = new At(Arrays.asList(user.getPhone()), false);
         TextMessage textMessage = new TextMessage(message.toString(), true);
         textMessage.setAt(at);
         dingDingService.send(textMessage);
@@ -154,7 +166,7 @@ public class OrderHelper {
         });
 
         message.append("\n\n");
-        At at = new At(Arrays.asList(user.getPhone()),false);
+        At at = new At(Arrays.asList(user.getPhone()), false);
         TextMessage textMessage = new TextMessage(message.toString(), false);
         textMessage.setAt(at);
         dingDingService.send(textMessage);
