@@ -71,17 +71,15 @@ public class OrderHelper {
         for (int i = 0; i < users.size(); i++) {
             user = users.get(i);
             meiCanApi.today();
-            logger.info("开始提醒：{} 点餐！", user.getName());
-
             Date now = new Date();
             Date beginOrderTime = DateUtils.parseDate(DateFormatUtils.format(now, "yyyy-MM-dd 15:00:00"), "yyyy-MM-dd HH:mm:ss");
             Date endOrderTime = DateUtils.parseDate(DateFormatUtils.format(now, "yyyy-MM-dd 15:30:00"), "yyyy-MM-dd HH:mm:ss");
 
-            boolean remind = beforeRemind(user);
-            if (!remind) {
-                continue;
-            }
             if (!now.after(beginOrderTime)) {
+                boolean remind = beforeRemind(user);
+                if (!remind) {
+                    continue;
+                }
                 if (dishes.isEmpty()) {
                     meiCanApi.getDishsFromMeiCan(user.getEmail(), user.getTabUniqueId());
                     dishes = meiCanApi.getDishes();
@@ -91,6 +89,10 @@ public class OrderHelper {
                     orderingRemind(dishes, user);
                 }
             } else {
+                boolean remind = beforeRemind(user);
+                if (!remind) {
+                    continue;
+                }
                 if (now.before(endOrderTime)) {
                     ordering(user);
                 }
