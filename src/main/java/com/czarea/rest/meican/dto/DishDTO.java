@@ -2,6 +2,9 @@ package com.czarea.rest.meican.dto;
 
 import java.util.List;
 
+/**
+ * @author zhouzx
+ */
 public class DishDTO {
 
     private List<Dish> myRegularDishList;
@@ -36,6 +39,15 @@ public class DishDTO {
 
         public void setWeight(int weight) {
             this.weight = weight;
+        }
+
+        @Override
+        public String toString() {
+            return "Dish{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", weight=" + weight +
+                '}';
         }
     }
 

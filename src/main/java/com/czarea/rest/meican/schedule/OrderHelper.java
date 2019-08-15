@@ -15,7 +15,6 @@ import com.czarea.rest.meican.service.MeiCanApi;
 import com.czarea.rest.meican.util.WeightedRandomBag;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -78,8 +77,11 @@ public class OrderHelper {
             Date beginOrderTime = DateUtils.parseDate(DateFormatUtils.format(now, "yyyy-MM-dd 15:00:00"), "yyyy-MM-dd HH:mm:ss");
             Date endOrderTime = DateUtils.parseDate(DateFormatUtils.format(now, "yyyy-MM-dd 15:30:00"), "yyyy-MM-dd HH:mm:ss");
 
+            boolean remind = beforeRemind(user);
+            if (!remind) {
+                continue;
+            }
             if (!now.after(beginOrderTime)) {
-                boolean remind = beforeRemind(user);
                 if (dishes.isEmpty()) {
                     meiCanApi.getDishsFromMeiCan(user.getEmail(), user.getTabUniqueId());
                     dishes = meiCanApi.getDishes();
