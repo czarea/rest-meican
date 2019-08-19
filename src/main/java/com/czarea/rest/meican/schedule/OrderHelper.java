@@ -73,7 +73,7 @@ public class OrderHelper {
             Date beginOrderTime = DateUtils.parseDate(DateFormatUtils.format(now, "yyyy-MM-dd 15:00:00"), "yyyy-MM-dd HH:mm:ss");
             Date endOrderTime = DateUtils.parseDate(DateFormatUtils.format(now, "yyyy-MM-dd 15:30:00"), "yyyy-MM-dd HH:mm:ss");
 
-            if (!now.after(beginOrderTime)) {
+            if (now.before(beginOrderTime)) {
                 boolean remind = beforeRemind(user);
                 if (remind) {
                     continue;
@@ -90,6 +90,8 @@ public class OrderHelper {
                 if (now.before(endOrderTime)) {
                     ordering(user, dishes);
                 }
+            } else {
+                logger.info("超过15:30，还没订餐的需要自己手动订餐！！！");
             }
 
 
