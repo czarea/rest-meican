@@ -66,4 +66,12 @@ public class DishDTO {
     public void setOthersRegularDishList(List<Dish> othersRegularDishList) {
         this.othersRegularDishList = othersRegularDishList;
     }
+
+    @Override
+    public String toString() {
+        return "DishDTO{" +
+            "myRegularDishList=" + myRegularDishList +
+            ", othersRegularDishList=" + othersRegularDishList +
+            '}';
+    }
 }

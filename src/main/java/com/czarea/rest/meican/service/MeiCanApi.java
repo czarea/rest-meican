@@ -40,7 +40,6 @@ public class MeiCanApi {
     }
 
     private Map<String, List<String>> cookies = new HashMap<>();
-    private List<Dish> dishes;
     private List<Restaurant> restaurants;
     private String today;
 
@@ -86,7 +85,7 @@ public class MeiCanApi {
         restaurants = result.getRestaurantList();
     }
 
-    public void getDishsFromMeiCan(String email, String tabUniqueId) {
+    public List<Dish> getDishesFromMeiCan(String email, String tabUniqueId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.put(HttpHeaders.COOKIE, cookies.get(email));
@@ -95,7 +94,7 @@ public class MeiCanApi {
         HttpEntity<MultiValueMap<String, String>> params = new HttpEntity<>(headers);
         DishDTO result = restTemplate.exchange(meiCanProperties.getDish() + today, HttpMethod.GET, params, DishDTO.class, uriVariables)
             .getBody();
-        dishes = Stream.concat(result.getMyRegularDishList().stream(), result.getOthersRegularDishList().stream())
+        return Stream.concat(result.getMyRegularDishList().stream(), result.getOthersRegularDishList().stream())
             .collect(Collectors.toList());
     }
 
@@ -141,14 +140,6 @@ public class MeiCanApi {
 
     public void setCookies(Map<String, List<String>> cookies) {
         this.cookies = cookies;
-    }
-
-    public List<Dish> getDishes() {
-        return dishes;
-    }
-
-    public void setDishes(List<Dish> dishes) {
-        this.dishes = dishes;
     }
 
     public List<Restaurant> getRestaurants() {

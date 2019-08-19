@@ -14,7 +14,6 @@ import com.czarea.rest.meican.service.DingDingService;
 import com.czarea.rest.meican.service.MeiCanApi;
 import com.czarea.rest.meican.util.WeightedRandomBag;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,7 +40,6 @@ public class OrderHelper {
     private final OrderRepository orderRepository;
     private final MeiCanApi meiCanApi;
     private final DingDingService dingDingService;
-    private List<Dish> dishes = new ArrayList<>();
 
     public OrderHelper(UserRepository userRepository, OrderRepository orderRepository, MeiCanApi meiCanApi,
         DingDingService dingDingService) {
@@ -77,24 +75,20 @@ public class OrderHelper {
 
             if (!now.after(beginOrderTime)) {
                 boolean remind = beforeRemind(user);
-                if (!remind) {
+                if (remind) {
                     continue;
                 }
-                if (dishes.isEmpty()) {
-                    meiCanApi.getDishsFromMeiCan(user.getEmail(), user.getTabUniqueId());
-                    dishes = meiCanApi.getDishes();
-                }
-                if (remind) {
-                    logger.info("推送钉钉消息给：{},可订餐列表为：{}", user.getName(), dishes);
-                    orderingRemind(dishes, user);
-                }
+                List<Dish> dishes = meiCanApi.getDishesFromMeiCan(user.getEmail(), user.getTabUniqueId());
+                logger.info("推送钉钉消息给：{},可订餐列表为：{}", user.getName(), dishes);
+                orderingRemind(dishes, user);
             } else {
                 boolean remind = beforeRemind(user);
                 if (!remind) {
                     continue;
                 }
+                List<Dish> dishes = meiCanApi.getDishesFromMeiCan(user.getEmail(), user.getTabUniqueId());
                 if (now.before(endOrderTime)) {
-                    ordering(user);
+                    ordering(user, dishes);
                 }
             }
         }
@@ -112,21 +106,19 @@ public class OrderHelper {
             orderDetail = meiCanApi.hasOrder(user.getEmail());
         } catch (Exception e) {
             logger.error("有可能登陆失败！");
+            return false;
         }
         boolean hasOrder = false;
         try {
             if (orderDetail != null && orderDetail.getDateList().get(0).getCalendarItemList().get(0).getCorpOrderUser() != null) {
                 hasOrder = true;
+                logger.info("{} 已经下单，忽略！", user.getName());
             }
+            return hasOrder;
         } catch (Exception e) {
             logger.error("", e);
             return false;
         }
-        if (hasOrder) {
-            logger.info("{} 已经下单，忽略！", user.getName());
-            return false;
-        }
-        return true;
     }
 
     /**
@@ -147,7 +139,7 @@ public class OrderHelper {
     /**
      * 美餐订餐
      */
-    private void ordering(User user) {
+    private void ordering(User user, List<Dish> dishes) {
         logger.info("到了当天15：00，小助手开始直接点餐了！");
         List<Order> orders = orderRepository
             .findAllByUserId(user.getId(), PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id")))
