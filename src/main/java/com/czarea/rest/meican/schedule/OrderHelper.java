@@ -81,9 +81,9 @@ public class OrderHelper {
                 List<Dish> dishes = meiCanApi.getDishesFromMeiCan(user.getEmail(), user.getTabUniqueId());
                 logger.info("推送钉钉消息给：{},可订餐列表为：{}", user.getName(), dishes);
                 orderingRemind(dishes, user);
-            } else {
+            } else if (now.before(endOrderTime)) {
                 boolean remind = beforeRemind(user);
-                if (!remind) {
+                if (remind) {
                     continue;
                 }
                 List<Dish> dishes = meiCanApi.getDishesFromMeiCan(user.getEmail(), user.getTabUniqueId());
@@ -91,6 +91,8 @@ public class OrderHelper {
                     ordering(user, dishes);
                 }
             }
+
+
         }
     }
 
